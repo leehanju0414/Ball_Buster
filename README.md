@@ -39,15 +39,19 @@
 ## 4. 예상 게임 실행 흐름
 
 1. **Title 화면**: 게임 로고와 [Touch to Start] 텍스트가 깜빡임.
+   
    <img width="334" height="555" alt="image" src="https://github.com/user-attachments/assets/d74c1bb9-87fd-4d94-b416-9908171f4f49" />
 
 2. **Main 플레이 화면**: 플레이어는 하단에서 좌우로 움직이고, 다양한 크기의 공들이 포물선을 그리며 화면을 튕겨 다님.
+   
    <img width="307" height="520" alt="image" src="https://github.com/user-attachments/assets/f277483a-e01c-4070-b8ee-c513ce291b9f" />
 
 3. **오브젝트 충돌/분열**: 플레이어가 위로 작살을 쏘아 큰 공을 맞추면, 2개의 작은 공으로 갈라져 튕기는 연출.
+   
    <img width="323" height="551" alt="image" src="https://github.com/user-attachments/assets/8f3e56d3-ee4f-4ca2-a417-f04c73d62a35" />
 
 4. **Game Over / Clear**: 플레이어가 공에 닿아 목숨을 모두 잃는다면 Game Over 씬으로 전환되며 재시작 버튼 출력.
+   
    <img width="332" height="556" alt="image" src="https://github.com/user-attachments/assets/81377da8-2850-4e53-a3a4-986864bc6a80" />
 
 
