@@ -30,7 +30,8 @@
 * 끊임없이 튕겨 오르는 거대한 공들을 작살로 쏴서 가장 작은 크기로 쪼개어 모두 소탕하는 2D 아케이드 액션 게임 (고전 명작 '팡' 모작)
 
 * <img width="921" height="696" alt="image" src="https://github.com/user-attachments/assets/94c995c9-f3b9-4355-b4c2-f26d41b6a579" />
-  (출처: https://www.youtube.com/watch?v=WMmApkBgpxI&t=101s | AracdeExtreme)
+
+(출처: https://www.youtube.com/watch?v=WMmApkBgpxI&t=101s | AracdeExtreme)
 
 * **핵심 메카닉**:
   * **수직 공격 및 분열**: 플레이어는 좌우로만 이동하며 위로 작살을 쏩니다. 작살에 맞은 공은 터지며 한 단계 작은 크기의 공 2개로 분열해 양옆으로 튕겨 나갑니다.
