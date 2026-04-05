@@ -44,7 +44,8 @@
 
 2. **Main 플레이 화면**: 플레이어는 하단에서 좌우로 움직이고, 다양한 크기의 공들이 포물선을 그리며 화면을 튕겨 다님.
    
-   <img width="307" height="520" alt="image" src="https://github.com/user-attachments/assets/f277483a-e01c-4070-b8ee-c513ce291b9f" />
+   <img width="335" height="557" alt="image" src="https://github.com/user-attachments/assets/07364d89-bd29-47fb-b753-33beffdab85d" />
+
 
 3. **오브젝트 충돌/분열**: 플레이어가 위로 작살을 쏘아 큰 공을 맞추면, 2개의 작은 공으로 갈라져 튕기는 연출.
    
