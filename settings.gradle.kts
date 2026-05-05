@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Ball_Buster"
 include(":app")
+include(":a2dg")
