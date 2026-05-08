@@ -4,6 +4,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import com.example.ball_buster.scene.MainLayer
+import com.example.ball_buster.scene.MainScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.JoyStick
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
@@ -19,8 +21,9 @@ class Player(val gctx: GameContext, val joystick: JoyStick) : IGameObject {
     private val rect = RectF()
 
     fun fire() {
-        // 나중에 작살로직
-        println("작살 발사")
+        val harpoon = Harpoon(gctx, x, y - radius)
+
+        (gctx.scene as? MainScene)?.world?.add(harpoon, MainLayer.HARPOON)
     }
 
     override fun update(gctx: GameContext) {

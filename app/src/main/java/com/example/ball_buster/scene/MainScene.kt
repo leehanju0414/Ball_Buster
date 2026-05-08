@@ -7,6 +7,7 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.World
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import com.example.ball_buster.R
+import com.example.ball_buster.objects.Ball
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
     val joystick = JoyStick(gctx, R.drawable.joy_bg, R.drawable.joy_thumb, 300f, 700f, 150f, 50f)
@@ -16,6 +17,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     override val world = World(MainLayer.entries.toTypedArray()).apply {
         add(player, MainLayer.PLAYER)
         add(joystick, MainLayer.UI)
+        add(Ball(gctx, 800f, 200f, 300f), MainLayer.BALL)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
