@@ -25,9 +25,14 @@ class World<TLayer>(
     val objectCount: Int
         get() = layers.values.sumOf { it.size }
 
+    fun objectsAt(layer: TLayer): List<IGameObject> {
+        return layers.getValue(layer)
+    }
+
     fun countAt(layer: TLayer): Int {
         return layers.getValue(layer).size
     }
+
 
     fun getDebugCounts(): String {
         return buildString {
