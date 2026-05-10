@@ -3,7 +3,8 @@
 #
 * **발표 영상 자료**:
 
-*https://youtu.be/poyAtwNgx8s
+*1차: https://youtu.be/Zc92kJFUXNI
+*2차: https://youtu.be/poyAtwNgx8s
 
 ---
 
