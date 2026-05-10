@@ -48,7 +48,8 @@ UI 관련 구현: 0% (진행 중)
 
 <img width="647" height="620" alt="image" src="https://github.com/user-attachments/assets/a7505c34-7b9e-4f06-b54d-178d6c0d75bf" />
 
-
+|주차|기간|횟수|
+|------|---|---|
 |1주차|04.05 ~ 04.11|12회|
 |2주차|04.12 ~ 04.18|4회|
 |3~4주차|04.19 ~ 05.02|0회|
