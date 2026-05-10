@@ -3,6 +3,7 @@
 #
 * **발표 영상 자료**:
 
+*https://youtu.be/poyAtwNgx8s
 
 ---
 
