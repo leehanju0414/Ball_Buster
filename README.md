@@ -7,7 +7,7 @@
 ---
 
 
-## 1. 게임 컨셉
+## 1. 게임 소개
 * 끊임없이 튕겨 오르는 거대한 공들을 작살로 쏴서 가장 작은 크기로 쪼개어 모두 소탕하는 2D 아케이드 액션 게임 (고전 명작 '팡' 모작)
 
 * <img width="921" height="696" alt="image" src="https://github.com/user-attachments/assets/94c995c9-f3b9-4355-b4c2-f26d41b6a579" />
@@ -22,59 +22,100 @@
 ---
 
 
-## 2. 개발 범위
-* 공과 작살 객체의 생성과 소멸 관리하기. 
-* 플레이어 및 작살과 공과의 충돌 판정을 구현.
-* 기기 성능에 영향받지 않도록 Delta Time을 적용하여 공의 물리 이동을 구현.
-* Title Scene, MainGame Scene, GameOver Scene 간의 상태 관리 및 전환을 구현.
-* 스프라이트 시트를 활용하여 작살 발사, 공 파괴, 플레이어 이동 애니메이션을 구현.
+## 2. 진행 상황
+프레임워크 연동 및 Scene구성: 60% ( 게임 오버, Pause Scene 구현 진행 중 )
 
-* * **캐릭터**: * 플레이어 객체 1종 (좌/우 이동, 피격 모션)
-  * 적 공 객체 4단계 (Large -> Medium -> Small -> Tiny)
-* **화면 구성**:
-  * Title Scene (로고 및 조작법)
-  * Main Game Scene (최소 레벨 1, 레벨 2 구성)
-  * Game Over / Clear Scene
-* **오브젝트/아이템**:
-  * 플레이어 투사체 (기본 작살)
-  * 장애물 블록 (공이 부딪혀 튕기는 구조물)
-* **사운드**: 배경음악 2곡(타이틀, 메인), 효과음 4종(발사, 터짐, 피격, 클리어)
+플레이어 조작: 100%
+
+작살 발사 관련 로직: 100%
+
+공 중력 물리 엔진 및 바닥 바운스 구현: 90% (속도 및 튀기는 높이 밸런스 패치 진행 중)
+
+충돌 판정 및 공 분열 로직: 70% (장애물 구현 진행중)
+
+UI 관련 구현: 0% (진행 중)
+
+스테이지 구현: 0% (진행 중)
+
+그래픽 리소스 적용: 0% (진행 중)
+
+사운드 리소스 적용: 0% (진행 중)
+
+---
+
+
+## 3. git commit
+
+<img width="647" height="620" alt="image" src="https://github.com/user-attachments/assets/a7505c34-7b9e-4f06-b54d-178d6c0d75bf" />
+
+
+|1주차|04.05 ~ 04.11|12회|
+|2주차|04.12 ~ 04.18|4회|
+|3~4주차|04.19 ~ 05.02|0회|
+|5주차|05.03 ~ 05.09|5회|
 
 
 ---
 
 
-## 3. 예상 게임 실행 흐름
+## 4. 변경된 사항
 
-1. **Title 화면**: 게임 로고와 [Touch to Start] 텍스트가 깜빡임.
-   
-   <img width="334" height="555" alt="image" src="https://github.com/user-attachments/assets/d74c1bb9-87fd-4d94-b416-9908171f4f49" />
-
-2. **Main 플레이 화면**: 플레이어는 하단에서 좌우로 움직이고, 다양한 크기의 공들이 포물선을 그리며 화면을 튕겨 다님.
-   
-   <img width="335" height="557" alt="image" src="https://github.com/user-attachments/assets/07364d89-bd29-47fb-b753-33beffdab85d" />
-
-
-3. **오브젝트 충돌/분열**: 플레이어가 위로 작살을 쏘아 큰 공을 맞추면, 2개의 작은 공으로 갈라져 튕기는 연출.
-   
-   <img width="323" height="551" alt="image" src="https://github.com/user-attachments/assets/8f3e56d3-ee4f-4ca2-a417-f04c73d62a35" />
-
-4. **Game Over / Clear**: 플레이어가 공에 닿아 목숨을 모두 잃는다면 Game Over 씬으로 전환되며 재시작 버튼 출력.
-   
-   <img width="332" height="556" alt="image" src="https://github.com/user-attachments/assets/81377da8-2850-4e53-a3a4-986864bc6a80" />
-
+ **화면 방향 변경 (세로 모드 -> 가로 모드)**
+ 세로 모드의 경우 공간이 부족해 플레이어가 분열하는 공을 피하기 어렵다고 판단하여 가로 모드로 게임을 개발하도록 목표를 변경하였습니다.
+ 또한 세로 모드의 경우 좌측 조이스틱과 우측 작살 발사 터치를 하기 위해서 화면을 너무 가려 시야가 답답해진다는 것도 목표 변경의 이유입니다.
 
 
 ---
 
+## 5. Activity 구성
 
-## 4. 개발 일정
+ **GameActivity**: 현재 게임의 유일한 Activity로 해상도를 고정하여 게임의 물리적 환경을 통제하고, 메인 Scene을 호출하여 본격적인 게임 루프를 시작하는 진입점 역할을 합니다.
 
-* **1주차 (4/6 ~ 4/12)**: 프로젝트 세팅 및 Framework 기본 구조 구축, Title과 Main Scene 전환 구현
-* **2주차 (4/13 ~ 4/19)**: 플레이어 오브젝트 추가 및 좌우 이동 로직 구현
-* **3주차 (4/20 ~ 4/26)**: 투사체(작살) 발사 로직 및 공 오브젝트 추가, 중력 포물선 이동 구현
-* **4주차 (4/27 ~ 5/3)**: 충돌 구현 및 충돌 시 공 분열 로직 구현
-* **5주차 (5/4 ~ 5/10)**: 분열하는 공 객체 최적화 및 장애물 블록 구현
-* **6주차 (5/11 ~ 5/17)**: UI(목숨, 점수 등) 구현, 스테이지 단계 구현
-* **7주차 (5/18 ~ 5/24)**: 애니메이션(공 터짐 이펙트 등) 적용 및 사운드 리소스 추가
-* **8주차 (5/25 ~ 5/31)**: 전체 밸런스 조정, 버그 수정
+
+---
+
+## 6. Scene 구성 및 전환 관계
+
+ **Scene 구성**: Title, Main, GameOver, Clear, Pause
+
+ **전환 관계**
+ Title Scene -> 버튼 터치 -> Main Scene
+ Main Scene -> 플레이어 체력 소진 -> GameOver Scene
+ Main Scene -> 모든 공 소멸 -> Clear Scene
+ Main Scene -> Pause 버튼 터치 -> Pause Scene
+
+
+---
+
+## 7. MainScene 핵심 game object
+
+<img width="2424" height="1080" alt="image" src="https://github.com/user-attachments/assets/d5b6ef7f-acff-4232-9d0e-a7adc5cb6a32" />
+
+
+**1. Player**
+구성: 화면 하단에 위치하며, 현재 파란색 네모로 렌더링 됨.
+
+상호작용: JoyStick의 angle과 power 데이터를 받아 좌우 속력을 계산함. 오른쪽 화면 터치 시 Harpoon 객체를 world에 동적으로 추가함.
+
+핵심 코드: dx = maxSpeed * joystick.power * cos(joystick.angle) 식을 통해 조이스틱 입력값을 삼각함수 기반의 부드러운 가속도 이동으로 변환.
+
+**2. Ball**
+구성: level 변수(1~3)를 가지며, 레벨에 따라 반지름과 바운스 높이가 결정됨. 빨간색 원형으로 렌더링.
+
+상호작용: 바닥 및 벽과 충돌 시 반발 계수 적용.
+
+핵심 코드: dy += gravity * dt 로 중력을 구현하고, split() 함수를 통해 피격 시 자신의 레벨을 1 낮춘 두 개의 새로운 Ball 인스턴스를 반대 방향 으로 튕겨내며 기존 객체는 파기함.
+
+**3. Harpoon**
+구성: 플레이어 위치에서 생성되어 위로 솟구치는 노란색 직사각형 투사체.
+
+상호작용: Y 좌표가 0 미만(화면 상단 이탈)이 되면 자기 자신을 world에서 해제함.
+
+핵심 코드: y -= speed * dt 로 등속 수직 상승 운동을 수행하며 정확한 타격 영역을 갱신.
+
+**4. CollisionChecker**
+구성: 렌더링되지 않는 로직 전용 객체.
+
+상호작용: MainLayer.HARPOON과 MainLayer.BALL 레이어에 접근.
+
+핵심 코드: world.forEachReversedAt 함수를 사용하여 두 레이어의 객체들을 역순으로 안전하게 이중 순회함. RectF.intersects로 AABB 충돌을 검사하고, 충돌 시 Ball.split() 호출.
