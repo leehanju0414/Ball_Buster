@@ -8,6 +8,7 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.scene.World
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import com.example.ball_buster.R
 import com.example.ball_buster.objects.Ball
+import com.example.ball_buster.objects.Block
 import com.example.ball_buster.objects.CollisionChecker
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
@@ -19,7 +20,11 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         add(player, MainLayer.PLAYER)
         add(joystick, MainLayer.UI)
         add(Ball(800f, 200f, 300f), MainLayer.BALL)
+        add(Ball(800f, 100f, 300f), MainLayer.BALL)
         add(CollisionChecker(this), MainLayer.UI)
+
+        add(Block(300f, 400f, 300f, 50f), MainLayer.BLOCK)
+        add(Block(1000f, 300f, 300f, 50f), MainLayer.BLOCK)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
