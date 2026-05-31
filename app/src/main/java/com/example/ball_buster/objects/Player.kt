@@ -12,6 +12,7 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.cos
 
 class Player(val gctx: GameContext, val joystick: JoyStick) : IGameObject {
+    val boundingBox = RectF()
     var x = 800f
     var y = 800f
     val radius = 50f
@@ -35,6 +36,8 @@ class Player(val gctx: GameContext, val joystick: JoyStick) : IGameObject {
         if (x > 1600f - radius) x = 1600f - radius
 
         rect.set(x - radius, y - radius, x + radius, y + radius)
+
+        boundingBox.set(x - radius, y - radius, x + radius, y + radius)
     }
 
     override fun draw(canvas: Canvas) {

@@ -6,6 +6,7 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.World
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import com.example.ball_buster.scene.MainLayer
+import com.example.ball_buster.scene.MainScene
 
 class CollisionChecker(
     val world: World<MainLayer>
@@ -14,6 +15,7 @@ class CollisionChecker(
         checkHarpoonBallCollision(gctx)
         checkHarpoonBlockCollision()
         checkBallBlockCollision()
+        checkPlayerBallCollision(gctx)
     }
 
     private fun checkHarpoonBallCollision(gctx: GameContext) {
@@ -82,6 +84,21 @@ class CollisionChecker(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun checkPlayerBallCollision(gctx: GameContext) {
+        val scene = gctx.scene as? MainScene ?: return
+        val player = scene.player
+        val balls = world.objectsAt(MainLayer.BALL)
+
+        for (i in balls.lastIndex downTo 0) {
+            val ball = balls[i] as? Ball ?: continue
+
+            if (RectF.intersects(player.boundingBox, ball.boundingBox)) {
+                scene.onPlayerHit()
+                break
             }
         }
     }
