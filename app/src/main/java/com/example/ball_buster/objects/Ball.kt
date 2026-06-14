@@ -55,6 +55,8 @@ class Ball(var x: Float, var y: Float, var dx: Float, val level: Int = 3) : IGam
         val scene = gctx.scene as? MainScene ?: return
         val world = (gctx.scene as? MainScene)?.world ?: return
 
+        SoundManager.playSfx(SoundManager.sfxExplosion)
+
         scene.scoreBoard.score += (level * 100)
         world.remove(this, MainLayer.BALL)
 

@@ -12,6 +12,7 @@ import com.example.ball_buster.objects.Ball
 import com.example.ball_buster.objects.Block
 import com.example.ball_buster.objects.CollisionChecker
 import com.example.ball_buster.objects.ScoreBoard
+import com.example.ball_buster.objects.SoundManager
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
     val joystick = JoyStick(gctx, R.drawable.joy_bg, R.drawable.joy_thumb, 300f, 700f, 150f, 50f)
@@ -25,6 +26,8 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     var isPaused = false
     val pauseButtonRect = android.graphics.RectF(1450f, 10f, 1570f, 130f)
     val titleButtonRect = android.graphics.RectF(600f, 650f, 1000f, 750f)
+    var isJoystickGrabbed = false
+
     override val world = World(MainLayer.entries.toTypedArray()).apply {
         add(player, MainLayer.PLAYER)
         add(joystick, MainLayer.UI)
@@ -35,6 +38,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     }
 
     init{
+        SoundManager.stopBgm()
         loadStage(scoreBoard.stage)
     }
 
@@ -91,6 +95,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         if (scoreBoard.lives > 0) {
             player.isInvincible = true
             player.invincibleTimer = player.invincibleDuration
+            SoundManager.playSfx(SoundManager.sfxHit)
         } else {
             scoreBoard.lives = 0
             isGameOver = true
@@ -124,6 +129,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                 //최종 스테이지를 클리어했을 때
                 scoreBoard.stage = MAX_STAGE + 1
                 isGameClear = true
+                SoundManager.playSfx(SoundManager.sfxClear)
             }
         }
     }
@@ -140,12 +146,13 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                     return true
                 }
 
-                isGameOver = false
-                isGameClear = false
-                scoreBoard.lives = 3
-                scoreBoard.score = 0
-                scoreBoard.stage = 1
-                loadStage(1)
+                if(isGameOver) {
+                    isGameOver = false
+                    scoreBoard.lives = 3
+                    scoreBoard.score = 0
+                    scoreBoard.stage = 1
+                    loadStage(1)
+                }
             }
             return true
         }
@@ -170,17 +177,36 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
         if (isPaused || isStageTransition) return true
 
-        val isRightSide = touchX > gctx.metrics.width / 2
+        val action = event.actionMasked
+        val pointerIndex = event.actionIndex
+        val ptAction = gctx.metrics.fromScreen(event.getX(pointerIndex), event.getY(pointerIndex))
+        val isRightSide = ptAction.x > gctx.metrics.width / 2
 
-        val isActionDown = event.actionMasked == MotionEvent.ACTION_DOWN ||
-                event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
-
-        if (isRightSide) {
-            if (isActionDown) {
-                player.fire()
+        when (action) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                if (isRightSide) {
+                    player.fire()
+                } else {
+                    isJoystickGrabbed = true
+                    joystick.onTouchEvent(event)
+                }
             }
-        } else {
-            joystick.onTouchEvent(event)
+
+            MotionEvent.ACTION_MOVE -> {
+                if (isJoystickGrabbed) {
+                    joystick.onTouchEvent(event)
+                }
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
+                if (isJoystickGrabbed) {
+                    joystick.onTouchEvent(event)
+
+                    if (event.pointerCount <= 1) {
+                        isJoystickGrabbed = false
+                    }
+                }
+            }
         }
 
         return true
@@ -188,6 +214,9 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
 
     override fun draw(canvas: Canvas) {
+        val gameArea = android.graphics.RectF(0f, 0f, 1600f, 900f)
+        val bgPaint = android.graphics.Paint()
+
         when (scoreBoard.stage) {
             //스테이지별 배경색
             1 -> canvas.drawColor(android.graphics.Color.rgb(20, 30, 40))
@@ -197,6 +226,11 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             5 -> canvas.drawColor(android.graphics.Color.rgb(30, 10, 40))
             else -> canvas.drawColor(android.graphics.Color.BLACK)
         }
+
+        bgPaint.style = android.graphics.Paint.Style.STROKE
+        bgPaint.strokeWidth = 6f
+        bgPaint.color = android.graphics.Color.WHITE
+        canvas.drawRect(gameArea, bgPaint)
 
         super.draw(canvas)
         val paint = android.graphics.Paint()
@@ -281,12 +315,6 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             paint.textAlign = android.graphics.Paint.Align.CENTER
             paint.isFakeBoldText = true
             canvas.drawText("STAGE CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, paint)
-
-            paint.color = android.graphics.Color.BLACK
-            paint.textSize = 50f
-            paint.isFakeBoldText = false
-            canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, paint)
-            canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, paint)
 
             drawTitleButton(canvas, paint)
         }

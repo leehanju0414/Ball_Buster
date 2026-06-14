@@ -26,6 +26,7 @@ class Player(val gctx: GameContext, val joystick: JoyStick) : IGameObject {
     private val rect = RectF()
 
     fun fire() {
+        SoundManager.playSfx(SoundManager.sfxFire)
         val harpoon = Harpoon(x, y - radius)
 
         (gctx.scene as? MainScene)?.world?.add(harpoon, MainLayer.HARPOON)
