@@ -16,6 +16,8 @@
 * 끊임없이 튕겨 오르는 거대한 공들을 작살로 쏴서 가장 작은 크기로 쪼개어 모두 소탕하는 2D 아케이드 액션 게임 (고전 명작 '팡' 모작)
 
 <img width="2424" height="1080" alt="image" src="https://github.com/user-attachments/assets/ce6b1b29-75e9-4e99-9d96-bdc2f79e50b0" />
+<img width="2424" height="1080" alt="image" src="https://github.com/user-attachments/assets/12c5b7ec-c1a3-486e-a94f-1efdc5e6b528" />
+
 
 
 (출처: https://www.youtube.com/watch?v=WMmApkBgpxI&t=101s | AracdeExtreme)
