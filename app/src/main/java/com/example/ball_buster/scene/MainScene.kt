@@ -1,5 +1,6 @@
 package com.example.ball_buster.scene
 
+import android.graphics.Canvas
 import android.view.MotionEvent
 import com.example.ball_buster.objects.Player
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.JoyStick
@@ -14,10 +15,11 @@ import com.example.ball_buster.objects.ScoreBoard
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
     val joystick = JoyStick(gctx, R.drawable.joy_bg, R.drawable.joy_thumb, 300f, 700f, 150f, 50f)
-
     val player = Player(gctx, joystick)
-
     val scoreBoard = ScoreBoard()
+    val MAX_STAGE = 5
+    var isGameOver = false
+    var isGameClear = false
 
     override val world = World(MainLayer.entries.toTypedArray()).apply {
         add(player, MainLayer.PLAYER)
@@ -44,12 +46,38 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                 world.add(Ball(800f, 100f, 300f, level = 3), MainLayer.BALL)
             }
             2 -> {
+                //중앙을 가로막는 블록
                 world.add(Ball(400f, 100f, -300f, level = 3), MainLayer.BALL)
                 world.add(Ball(1200f, 100f, 300f, level = 3), MainLayer.BALL)
-                world.add(Block(650f, 400f, 300f, 50f), MainLayer.BLOCK) // 가운데 블록
+                world.add(Block(650f, 400f, 300f, 50f), MainLayer.BLOCK)
+            }
+            3 -> {
+                //양옆에 블록
+                world.add(Ball(200f, 100f, 250f, level = 3), MainLayer.BALL)
+                world.add(Ball(1400f, 100f, -250f, level = 3), MainLayer.BALL)
+
+                world.add(Block(150f, 500f, 250f, 50f), MainLayer.BLOCK) // 좌측 타워
+                world.add(Block(1200f, 500f, 250f, 50f), MainLayer.BLOCK) // 우측 타워
+            }
+            4 -> {
+                //천장 중앙에 거대한 블록
+                world.add(Ball(400f, 150f, 350f, level = 3), MainLayer.BALL)
+                world.add(Ball(1200f, 150f, -350f, level = 3), MainLayer.BALL)
+
+                world.add(Block(350f, 550f, 900f, 60f), MainLayer.BLOCK)
+            }
+            5 -> {
+                //복잡한 블록 지형
+                world.add(Ball(800f, 50f, 300f, level = 3), MainLayer.BALL)
+                world.add(Ball(300f, 100f, 250f, level = 3), MainLayer.BALL)
+                world.add(Ball(1300f, 100f, -250f, level = 3), MainLayer.BALL)
+
+                world.add(Block(200f, 450f, 300f, 50f), MainLayer.BLOCK) // 좌측 중단
+                world.add(Block(1100f, 450f, 300f, 50f), MainLayer.BLOCK) // 우측 중단
+                world.add(Block(650f, 250f, 300f, 50f), MainLayer.BLOCK)  // 중앙 상단
             }
             else -> {
-                // 여기다가 클리어신으로 넘어가게
+                android.util.Log.e("BallBuster", "존재하지 않는 스테이지 호출: $stage")
             }
         }
     }
@@ -57,19 +85,32 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     fun onPlayerHit() {
         scoreBoard.lives--
         if (scoreBoard.lives > 0) {
-            // 맞았다고 깜박거리는 애니메이션을 넣으면 좋을듯
+            player.isInvincible = true
+            player.invincibleTimer = player.invincibleDuration
         } else {
-            // 게임오버 신으로 전환
+            scoreBoard.lives = 0
+            isGameOver = true
         }
     }
 
     override fun update(gctx: GameContext) {
+        if (isGameOver || isGameClear) return
+
         super.update(gctx)
 
-        // 공 다 제거하면 다음 스테이지로 이동
+        if (scoreBoard.stage > MAX_STAGE || scoreBoard.lives <= 0) return
+
+        //화면에 공이 하나도 없을 때
         if (world.countAt(MainLayer.BALL) == 0) {
-            scoreBoard.stage++
-            loadStage(scoreBoard.stage)
+            if (scoreBoard.stage < MAX_STAGE) {
+                //다음 스테이지가 있으면 정상 진행
+                scoreBoard.stage++
+                loadStage(scoreBoard.stage)
+            } else {
+                //최종 스테이지를 클리어했을 때
+                scoreBoard.stage = MAX_STAGE + 1
+                isGameClear = true
+            }
         }
     }
 
@@ -88,6 +129,60 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             joystick.onTouchEvent(event)
         }
 
+        if (isGameOver || isGameClear) {
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                isGameOver = false
+                isGameClear = false
+                scoreBoard.lives = 3
+                scoreBoard.score = 0
+                scoreBoard.stage = 1
+                loadStage(1)
+            }
+            return true
+        }
+
         return true
+    }
+
+
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+
+        if (isGameOver) {
+            val paint = android.graphics.Paint()
+
+            paint.color = android.graphics.Color.argb(180, 0, 0, 0)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+
+            paint.color = android.graphics.Color.RED
+            paint.textSize = 120f
+            paint.textAlign = android.graphics.Paint.Align.CENTER
+            paint.isFakeBoldText = true
+            canvas.drawText("GAME OVER", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, paint)
+
+            paint.color = android.graphics.Color.WHITE
+            paint.textSize = 50f
+            paint.isFakeBoldText = false
+            canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, paint)
+            canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, paint)
+        }
+        else if (isGameClear) {
+            val paint = android.graphics.Paint()
+
+            paint.color = android.graphics.Color.argb(150, 255, 255, 255)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+
+            paint.color = android.graphics.Color.rgb(255, 215, 0) // Gold 색상
+            paint.textSize = 120f
+            paint.textAlign = android.graphics.Paint.Align.CENTER
+            paint.isFakeBoldText = true
+            canvas.drawText("STAGE CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, paint)
+
+            paint.color = android.graphics.Color.BLACK
+            paint.textSize = 50f
+            paint.isFakeBoldText = false
+            canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, paint)
+            canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, paint)
+        }
     }
 }

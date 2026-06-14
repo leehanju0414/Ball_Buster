@@ -96,6 +96,8 @@ class CollisionChecker(
         for (i in balls.lastIndex downTo 0) {
             val ball = balls[i] as? Ball ?: continue
 
+            if (player.isInvincible) return
+
             if (RectF.intersects(player.boundingBox, ball.boundingBox)) {
                 scene.onPlayerHit()
                 break

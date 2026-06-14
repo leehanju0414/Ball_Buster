@@ -18,6 +18,10 @@ class Player(val gctx: GameContext, val joystick: JoyStick) : IGameObject {
     val radius = 50f
     val maxSpeed = 800f
 
+    var isInvincible = false
+    var invincibleTimer = 0f
+    val invincibleDuration = 1.5f
+
     private val paint = Paint().apply { color = Color.BLUE }
     private val rect = RectF()
 
@@ -37,10 +41,22 @@ class Player(val gctx: GameContext, val joystick: JoyStick) : IGameObject {
 
         rect.set(x - radius, y - radius, x + radius, y + radius)
 
+        //무적 업데이트
+        if (isInvincible) {
+            invincibleTimer -= gctx.frameTime
+            if (invincibleTimer <= 0f) {
+                isInvincible = false
+            }
+        }
+
         boundingBox.set(x - radius, y - radius, x + radius, y + radius)
     }
 
     override fun draw(canvas: Canvas) {
+        //무적타임에 깜빡거리기
+        if (isInvincible && (invincibleTimer * 10).toInt() % 2 == 0) {
+            return
+        }
         canvas.drawRect(rect, paint)
     }
 }
