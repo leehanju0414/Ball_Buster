@@ -28,6 +28,10 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     val titleButtonRect = android.graphics.RectF(600f, 650f, 1000f, 750f)
     var isJoystickGrabbed = false
 
+    private val gameArea by lazy { android.graphics.RectF(0f, 0f, 1600f, 900f) }
+    private val bgPaint by lazy { android.graphics.Paint() }
+    private val uiPaint by lazy { android.graphics.Paint() }
+
     override val world = World(MainLayer.entries.toTypedArray()).apply {
         add(player, MainLayer.PLAYER)
         add(joystick, MainLayer.UI)
@@ -214,18 +218,18 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
 
     override fun draw(canvas: Canvas) {
-        val gameArea = android.graphics.RectF(0f, 0f, 1600f, 900f)
-        val bgPaint = android.graphics.Paint()
+        canvas.drawColor(android.graphics.Color.BLACK)
 
+        bgPaint.style = android.graphics.Paint.Style.FILL
         when (scoreBoard.stage) {
-            //스테이지별 배경색
-            1 -> canvas.drawColor(android.graphics.Color.rgb(20, 30, 40))
-            2 -> canvas.drawColor(android.graphics.Color.rgb(40, 20, 20))
-            3 -> canvas.drawColor(android.graphics.Color.rgb(20, 40, 20))
-            4 -> canvas.drawColor(android.graphics.Color.rgb(40, 30, 10))
-            5 -> canvas.drawColor(android.graphics.Color.rgb(30, 10, 40))
-            else -> canvas.drawColor(android.graphics.Color.BLACK)
+            1 -> bgPaint.color = android.graphics.Color.rgb(20, 30, 40)
+            2 -> bgPaint.color = android.graphics.Color.rgb(40, 20, 20)
+            3 -> bgPaint.color = android.graphics.Color.rgb(20, 40, 20)
+            4 -> bgPaint.color = android.graphics.Color.rgb(40, 30, 10)
+            5 -> bgPaint.color = android.graphics.Color.rgb(30, 10, 40)
+            else -> bgPaint.color = android.graphics.Color.rgb(20, 30, 40)
         }
+        canvas.drawRect(gameArea, bgPaint)
 
         bgPaint.style = android.graphics.Paint.Style.STROKE
         bgPaint.strokeWidth = 6f
@@ -233,90 +237,81 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         canvas.drawRect(gameArea, bgPaint)
 
         super.draw(canvas)
-        val paint = android.graphics.Paint()
-
+        
         if (!isGameOver && !isGameClear) {
-            paint.textSize = 70f
-            paint.isFakeBoldText = true
-            paint.textAlign = android.graphics.Paint.Align.CENTER
+            uiPaint.textSize = 70f
+            uiPaint.isFakeBoldText = true
+            uiPaint.textAlign = android.graphics.Paint.Align.CENTER
 
-            paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 10f
-            paint.color = android.graphics.Color.BLACK
-            canvas.drawText("| |", 1510f, 95f, paint)
+            uiPaint.style = android.graphics.Paint.Style.STROKE
+            uiPaint.strokeWidth = 10f
+            uiPaint.color = android.graphics.Color.BLACK
+            canvas.drawText("| |", 1510f, 95f, uiPaint)
 
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.strokeWidth = 0f //
-            paint.color = android.graphics.Color.WHITE
-            canvas.drawText("| |", 1510f, 95f, paint)
+            uiPaint.style = android.graphics.Paint.Style.FILL
+            uiPaint.strokeWidth = 0f
+            uiPaint.color = android.graphics.Color.WHITE
+            canvas.drawText("| |", 1510f, 95f, uiPaint)
         }
 
         if (isPaused) {
-            paint.color = android.graphics.Color.argb(150, 0, 0, 0)
-            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+            uiPaint.color = android.graphics.Color.argb(150, 0, 0, 0)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, uiPaint)
 
-            paint.color = android.graphics.Color.WHITE
-            paint.textSize = 150f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            canvas.drawText("PAUSED", gctx.metrics.width / 2f, gctx.metrics.height / 2f, paint)
+            uiPaint.color = android.graphics.Color.WHITE
+            uiPaint.textSize = 150f
+            uiPaint.textAlign = android.graphics.Paint.Align.CENTER
+            canvas.drawText("PAUSED", gctx.metrics.width / 2f, gctx.metrics.height / 2f, uiPaint)
 
-            paint.textSize = 50f
-            paint.isFakeBoldText = false
-            canvas.drawText("Tap anywhere to Resume", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 100f, paint)
+            uiPaint.textSize = 50f
+            uiPaint.isFakeBoldText = false
+            canvas.drawText("Tap anywhere to Resume", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 100f, uiPaint)
 
-            drawTitleButton(canvas, paint)
+            drawTitleButton(canvas, uiPaint)
         }
-
         else if (isGameOver) {
-            val paint = android.graphics.Paint()
+            uiPaint.color = android.graphics.Color.argb(180, 0, 0, 0)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, uiPaint)
 
-            paint.color = android.graphics.Color.argb(180, 0, 0, 0)
-            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+            uiPaint.color = android.graphics.Color.RED
+            uiPaint.textSize = 120f
+            uiPaint.textAlign = android.graphics.Paint.Align.CENTER
+            uiPaint.isFakeBoldText = true
+            canvas.drawText("GAME OVER", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, uiPaint)
 
-            paint.color = android.graphics.Color.RED
-            paint.textSize = 120f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            paint.isFakeBoldText = true
-            canvas.drawText("GAME OVER", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, paint)
+            uiPaint.color = android.graphics.Color.WHITE
+            uiPaint.textSize = 50f
+            uiPaint.isFakeBoldText = false
+            canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, uiPaint)
+            canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, uiPaint)
 
-            paint.color = android.graphics.Color.WHITE
-            paint.textSize = 50f
-            paint.isFakeBoldText = false
-            canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, paint)
-            canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, paint)
-
-            drawTitleButton(canvas, paint)
+            drawTitleButton(canvas, uiPaint)
         }
         else if (isStageTransition) {
-            val paint = android.graphics.Paint()
+            uiPaint.color = android.graphics.Color.argb(120, 0, 0, 0)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, uiPaint)
 
-            paint.color = android.graphics.Color.argb(120, 0, 0, 0)
-            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+            uiPaint.color = android.graphics.Color.YELLOW
+            uiPaint.textSize = 100f
+            uiPaint.textAlign = android.graphics.Paint.Align.CENTER
+            uiPaint.isFakeBoldText = true
+            canvas.drawText("STAGE ${scoreBoard.stage} CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 30f, uiPaint)
 
-            paint.color = android.graphics.Color.YELLOW
-            paint.textSize = 100f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            paint.isFakeBoldText = true
-            canvas.drawText("STAGE ${scoreBoard.stage} CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 30f, paint)
-
-            paint.color = android.graphics.Color.WHITE
-            paint.textSize = 60f
-            canvas.drawText("Get Ready...", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 80f, paint)
-
+            uiPaint.color = android.graphics.Color.WHITE
+            uiPaint.textSize = 60f
+            canvas.drawText("Get Ready...", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 80f, uiPaint)
         }
         else if (isGameClear) {
-            val paint = android.graphics.Paint()
+            uiPaint.color = android.graphics.Color.argb(150, 255, 255, 255)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, uiPaint)
 
-            paint.color = android.graphics.Color.argb(150, 255, 255, 255)
-            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+            uiPaint.color = android.graphics.Color.rgb(255, 215, 0) // Gold 색상
+            uiPaint.textSize = 120f
+            uiPaint.textAlign = android.graphics.Paint.Align.CENTER
+            uiPaint.isFakeBoldText = true
+            canvas.drawText("STAGE CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, uiPaint)
 
-            paint.color = android.graphics.Color.rgb(255, 215, 0) // Gold 색상
-            paint.textSize = 120f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            paint.isFakeBoldText = true
-            canvas.drawText("STAGE CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 50f, paint)
-
-            drawTitleButton(canvas, paint)
+            drawTitleButton(canvas, uiPaint)
         }
     }
 
