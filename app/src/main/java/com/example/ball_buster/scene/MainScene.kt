@@ -20,7 +20,11 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     val MAX_STAGE = 5
     var isGameOver = false
     var isGameClear = false
-
+    var isStageTransition = false
+    var transitionTimer = 0f
+    var isPaused = false
+    val pauseButtonRect = android.graphics.RectF(1450f, 10f, 1570f, 130f)
+    val titleButtonRect = android.graphics.RectF(600f, 650f, 1000f, 750f)
     override val world = World(MainLayer.entries.toTypedArray()).apply {
         add(player, MainLayer.PLAYER)
         add(joystick, MainLayer.UI)
@@ -94,7 +98,17 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     }
 
     override fun update(gctx: GameContext) {
-        if (isGameOver || isGameClear) return
+        if (isPaused || isGameOver || isGameClear) return
+
+        if (isStageTransition) {
+            transitionTimer -= gctx.frameTime
+            if (transitionTimer <= 0f) {
+                isStageTransition = false
+                scoreBoard.stage++
+                loadStage(scoreBoard.stage)
+            }
+            return
+        }
 
         super.update(gctx)
 
@@ -103,9 +117,9 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         //화면에 공이 하나도 없을 때
         if (world.countAt(MainLayer.BALL) == 0) {
             if (scoreBoard.stage < MAX_STAGE) {
-                //다음 스테이지가 있으면 정상 진행
-                scoreBoard.stage++
-                loadStage(scoreBoard.stage)
+                //멈췄다가 다음스테이지로 이동
+                isStageTransition = true
+                transitionTimer = 2.0f
             } else {
                 //최종 스테이지를 클리어했을 때
                 scoreBoard.stage = MAX_STAGE + 1
@@ -116,7 +130,47 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val pt = gctx.metrics.fromScreen(event.x, event.y)
-        val isRightSide = pt.x > gctx.metrics.width / 2
+        val touchX = pt.x
+        val touchY = pt.y
+
+        if (isGameOver || isGameClear) {
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                if (titleButtonRect.contains(touchX, touchY)) {
+                    com.example.ball_buster.activity.GameActivity.instance?.finish()
+                    return true
+                }
+
+                isGameOver = false
+                isGameClear = false
+                scoreBoard.lives = 3
+                scoreBoard.score = 0
+                scoreBoard.stage = 1
+                loadStage(1)
+            }
+            return true
+        }
+
+        //일시정지 해제 및 일시정지 버튼 터치 처리
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            if (isPaused) {
+                if (titleButtonRect.contains(touchX, touchY)) {
+                    isPaused = false
+                    com.example.ball_buster.activity.GameActivity.instance?.finish()
+                    return true
+                }
+                isPaused = false
+                return true
+            }
+
+            if (!isStageTransition && pauseButtonRect.contains(touchX, touchY)) {
+                isPaused = true
+                return true
+            }
+        }
+
+        if (isPaused || isStageTransition) return true
+
+        val isRightSide = touchX > gctx.metrics.width / 2
 
         val isActionDown = event.actionMasked == MotionEvent.ACTION_DOWN ||
                 event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
@@ -129,26 +183,57 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             joystick.onTouchEvent(event)
         }
 
-        if (isGameOver || isGameClear) {
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                isGameOver = false
-                isGameClear = false
-                scoreBoard.lives = 3
-                scoreBoard.score = 0
-                scoreBoard.stage = 1
-                loadStage(1)
-            }
-            return true
-        }
-
         return true
     }
 
 
     override fun draw(canvas: Canvas) {
-        super.draw(canvas)
+        when (scoreBoard.stage) {
+            //스테이지별 배경색
+            1 -> canvas.drawColor(android.graphics.Color.rgb(20, 30, 40))
+            2 -> canvas.drawColor(android.graphics.Color.rgb(40, 20, 20))
+            3 -> canvas.drawColor(android.graphics.Color.rgb(20, 40, 20))
+            4 -> canvas.drawColor(android.graphics.Color.rgb(40, 30, 10))
+            5 -> canvas.drawColor(android.graphics.Color.rgb(30, 10, 40))
+            else -> canvas.drawColor(android.graphics.Color.BLACK)
+        }
 
-        if (isGameOver) {
+        super.draw(canvas)
+        val paint = android.graphics.Paint()
+
+        if (!isGameOver && !isGameClear) {
+            paint.textSize = 70f
+            paint.isFakeBoldText = true
+            paint.textAlign = android.graphics.Paint.Align.CENTER
+
+            paint.style = android.graphics.Paint.Style.STROKE
+            paint.strokeWidth = 10f
+            paint.color = android.graphics.Color.BLACK
+            canvas.drawText("| |", 1510f, 95f, paint)
+
+            paint.style = android.graphics.Paint.Style.FILL
+            paint.strokeWidth = 0f //
+            paint.color = android.graphics.Color.WHITE
+            canvas.drawText("| |", 1510f, 95f, paint)
+        }
+
+        if (isPaused) {
+            paint.color = android.graphics.Color.argb(150, 0, 0, 0)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+
+            paint.color = android.graphics.Color.WHITE
+            paint.textSize = 150f
+            paint.textAlign = android.graphics.Paint.Align.CENTER
+            canvas.drawText("PAUSED", gctx.metrics.width / 2f, gctx.metrics.height / 2f, paint)
+
+            paint.textSize = 50f
+            paint.isFakeBoldText = false
+            canvas.drawText("Tap anywhere to Resume", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 100f, paint)
+
+            drawTitleButton(canvas, paint)
+        }
+
+        else if (isGameOver) {
             val paint = android.graphics.Paint()
 
             paint.color = android.graphics.Color.argb(180, 0, 0, 0)
@@ -165,6 +250,25 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             paint.isFakeBoldText = false
             canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, paint)
             canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, paint)
+
+            drawTitleButton(canvas, paint)
+        }
+        else if (isStageTransition) {
+            val paint = android.graphics.Paint()
+
+            paint.color = android.graphics.Color.argb(120, 0, 0, 0)
+            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, paint)
+
+            paint.color = android.graphics.Color.YELLOW
+            paint.textSize = 100f
+            paint.textAlign = android.graphics.Paint.Align.CENTER
+            paint.isFakeBoldText = true
+            canvas.drawText("STAGE ${scoreBoard.stage} CLEAR!", gctx.metrics.width / 2f, gctx.metrics.height / 2f - 30f, paint)
+
+            paint.color = android.graphics.Color.WHITE
+            paint.textSize = 60f
+            canvas.drawText("Get Ready...", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 80f, paint)
+
         }
         else if (isGameClear) {
             val paint = android.graphics.Paint()
@@ -183,6 +287,26 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             paint.isFakeBoldText = false
             canvas.drawText("Final Score: ${scoreBoard.score}", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 50f, paint)
             canvas.drawText("Tap to Restart", gctx.metrics.width / 2f, gctx.metrics.height / 2f + 150f, paint)
+
+            drawTitleButton(canvas, paint)
         }
+    }
+
+    private fun drawTitleButton(canvas: Canvas, paint: android.graphics.Paint) {
+        paint.style = android.graphics.Paint.Style.FILL
+        paint.color = android.graphics.Color.DKGRAY
+        canvas.drawRect(titleButtonRect, paint)
+
+        paint.style = android.graphics.Paint.Style.STROKE
+        paint.strokeWidth = 6f
+        paint.color = android.graphics.Color.WHITE
+        canvas.drawRect(titleButtonRect, paint)
+
+        paint.style = android.graphics.Paint.Style.FILL
+        paint.strokeWidth = 0f
+        paint.color = android.graphics.Color.WHITE
+        paint.textSize = 45f
+        paint.isFakeBoldText = true
+        canvas.drawText("BACK TO TITLE", titleButtonRect.centerX(), titleButtonRect.centerY() + 15f, paint)
     }
 }

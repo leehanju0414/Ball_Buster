@@ -4,30 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/title_bg"
     tools:context=".MainActivity">
 
-    <!-- 게임 타이틀 텍스트 -->
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="60dp"
         android:text="Ball Buster"
-        android:textSize="48sp"
-        android:textStyle="bold"
+        android:textColor="#FFEA00"
+        android:textSize="64sp"
+        android:textStyle="bold|italic"
+        android:fontFamily="sans-serif-black"
+        android:shadowColor="#FF007F"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="25"
         app:layout_constraintBottom_toTopOf="@+id/btnStartGame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 게임 시작 버튼 -->
     <Button
         android:id="@+id/btnStartGame"
-        android:layout_width="200dp"
-        android:layout_height="80dp"
-        android:text="Game Start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INSERT COIN (START)"
+        android:textColor="#FFFFFF"
         android:textSize="24sp"
+        android:textStyle="bold"
+        android:backgroundTint="#00D4FF"
+        app:cornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
